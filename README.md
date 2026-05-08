@@ -141,12 +141,17 @@ The same pattern applies to `OPTIMIZERS` in `optim.py` and `LOSSES` in `loss.py`
 ```bash
 pip install -r requirements-dev.txt
 pre-commit install
+ln -sf ../../.githooks/pre-push .git/hooks/pre-push
 pytest
 ```
 
-`pre-commit install` installs both `pre-commit` and `pre-push` hooks (the framework is configured via `default_install_hook_types` in `.pre-commit-config.yaml`):
+Local git hooks:
 
-- **pre-commit**: `ruff check --fix` and `ruff format` on staged files.
-- **pre-push**: full `pytest` suite must pass before the push goes through.
+- **pre-commit** (managed by the `pre-commit` framework): `ruff check --fix` and `ruff format` on staged files. Configured in `.pre-commit-config.yaml`.
+- **pre-push** (raw git hook): runs the full `pytest` suite. The script lives at `.githooks/pre-push` and is symlinked into `.git/hooks/pre-push`.
 
-Lint runs on every commit, tests run on every push. Configuration lives in `pyproject.toml` (ruff, pytest) and `.pre-commit-config.yaml` (hook wiring).
+CI:
+
+- **GitHub Actions** (`.github/workflows/ci.yml`): on every push and pull request, runs `ruff check`, `ruff format --check`, then `pytest`. Lint runs before tests.
+
+Lint runs on every commit + every push to GitHub; tests run on every push (locally and in CI). Configuration lives in `pyproject.toml` (ruff, pytest), `.pre-commit-config.yaml` (commit hook), and `.githooks/pre-push` (push hook).
