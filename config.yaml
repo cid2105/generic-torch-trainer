@@ -1,0 +1,64 @@
+# config.yaml
+
+data:
+  use_toy_data: true
+  toy_data:
+    n: 5000
+    seed: 42
+
+  # Used only if use_toy_data: false
+  input_path: null
+  target_col: label
+
+split:
+  test_size: 0.2
+  random_state: 42
+  stratify: true
+
+preprocessing:
+  numeric:
+    imputer:
+      strategy: median
+    scaler:
+      enabled: true
+
+  categorical:
+    imputer:
+      strategy: constant
+      fill_value: missing
+    onehot:
+      handle_unknown: ignore
+      sparse_output: false
+
+model:
+  name: BinaryClassifier
+  hidden_dims:
+    - 128
+    - 64
+  dropout: 0.1
+
+training:
+  batch_size: 512
+  epochs: 10
+  shuffle_train: true
+
+  optimizer:
+    name: AdamW
+    lr: 0.001
+    weight_decay: 0.0001
+
+  loss:
+    name: BCEWithLogitsLoss
+
+  device: auto   # auto, cpu, cuda
+
+evaluation:
+  threshold: 0.5
+  metrics:
+    - accuracy
+
+inference:
+  drop_target_col_if_present: true
+
+output:
+  dir: outputs
