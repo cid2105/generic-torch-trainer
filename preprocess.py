@@ -16,13 +16,8 @@ def build_preprocessor(
     config: dict[str, Any],
 ):
     feature_cols = [c for c in df.columns if c != target_col]
-
-    categorical_cols = [
-        c
-        for c in feature_cols
-        if df[c].dtype == "object" or str(df[c].dtype).startswith("category")
-    ]
-    numeric_cols = [c for c in feature_cols if c not in categorical_cols]
+    numeric_cols = [c for c in feature_cols if pd.api.types.is_numeric_dtype(df[c])]
+    categorical_cols = [c for c in feature_cols if c not in numeric_cols]
 
     pp = config["preprocessing"]
 
